@@ -4,36 +4,37 @@ import os
 DATA_DIR = "data/notes"
 
 def split_sections(text):
-    """按 ## / ### 标题切成小节，返回 [(标题, 内容)]"""
+    """
+    按照'## ' 和'### '切分
+    """
     sections = []
     cur_heading = "前言"
-    cur_lines = []
-    in_code = False
+    cur_line = []
+    in_Code = False
     for line in text.splitlines():
         if line.startswith("```"):
-            in_code = not in_code
-        if not in_code and (line.startswith("## ") or line.startswith("### ")):
-            if cur_lines:
-                sections.append((cur_heading, cur_lines))
-            cur_heading = line.lstrip("# ").strip()
-            cur_lines = [line]
+            in_Code = not in_Code
+        if not in_Code and (line.startswith("## ") or line.startswith("### ")):
+            if cur_line:
+                sections.append((cur_heading, cur_line))
+            cur_heading = line.lstrip("# ")
+            cur_line = [line]
         else:
-            cur_lines.append(line)
-    if cur_lines:
-        sections.append((cur_heading, cur_lines))
+            cur_line.append(line)
+    if cur_line:
+        sections.append((cur_heading, cur_line))
     return sections
 
-def make_chunks(text, max_len=800):
-    """每个小节一个块，超长的块按照换行再切一刀"""
+def make_chunks(text, max_length=1000):
     chunks = []
     for heading, lines in split_sections(text):
         content = "\n".join(lines)
         if len(content.strip()) < 30:
             continue
-        while len(content) > max_len:
-            cut = content.rfind("\n", 100, max_len)
+        while len(content) > max_length:
+            cut = content.rfind("\n", 1000, max_length)
             if cut < 100:
-                cut = max_len
+                cut = max_length
             if content[:cut].count("```") % 2 == 1:
                 close = content.find("```", cut)
                 if close != -1:
@@ -52,15 +53,16 @@ def build_all_chunks():
             continue
         with open(os.path.join(DATA_DIR, fn)) as f:
             text = f.read()
-        for c in make_chunks(text):
-            all_chunks.append({"file": fn, "text": c})
+        for chunk in make_chunks(text):
+            all_chunks.append({"file": fn, "text": chunk})
     return all_chunks
 
+
 if __name__ == "__main__":
-    chunks = build_all_chunks()
-    with open("data/chunks.json", "w", encoding="utf-8") as f:
-        json.dump(chunks, f, ensure_ascii=False, indent=2)
-    print(f"总块数：{len(chunks)}")
+    all_chunks = build_all_chunks()
+    with open("practice/chunks.json", "w", encoding="utf-8") as f:
+        json.dump(all_chunks, f, ensure_ascii=False, indent=2)
+    print(f"总块数：{len(all_chunks)}")
     print("前三块预览：\n")
-    for c in chunks[:3]:
-        print("---", c["file"], "|", c["text"][:40].replace("\n", " "))
+    for c in all_chunks[:3]:
+        print("---", c["file"], "|", c["text"].replace("\n", " "))
