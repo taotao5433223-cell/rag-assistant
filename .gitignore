@@ -19,10 +19,5 @@ env/
 src/config.py
 .env
 
-# 生成数据（可由 chunk.py / embed.py 重新生成）
-data/embeddings.json
-practice/chunks.json
-practice/embeddings.json
-
 # 日志
 *.log
