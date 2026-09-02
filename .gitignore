@@ -1,4 +1,28 @@
+# 系统文件
 .DS_Store
-config.py
-data/.DS_Store
+
+# Python 缓存
 __pycache__/
+*.pyc
+*.pyo
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# IDE 配置
+.idea/
+.vscode/
+
+# 密钥与敏感配置（含 API Key）
+src/config.py
+.env
+
+# 生成数据（可由 chunk.py / embed.py 重新生成）
+data/embeddings.json
+practice/chunks.json
+practice/embeddings.json
+
+# 日志
+*.log
