@@ -21,3 +21,6 @@ src/config.py
 
 # 日志
 *.log
+
+#练习不上传
+practice/
